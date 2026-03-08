@@ -61,7 +61,7 @@ export default class ServerController {
         if (this.id) {
             this.select(this.id, this.name);
         } else {
-            const server = result[0]
+            const server = instancesSortedByName[0]
             if (server) {
                 this.select(server.id, server.name);
             }
