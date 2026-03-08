@@ -239,7 +239,7 @@ export default class Room {
 
                 const onlineUsers = [...usersInRole].filter((user) => { return user.status !== "OFFLINE" }).length;
                 if (onlineUsers > 0) {
-                    userList.appendChild(this.#createSeparator(`${role.name} - ${usersInRole.length}`));
+                    userList.appendChild(this.#createSeparator(`${role.name} - ${onlineUsers}`));
                 }
 
                 const sortedByDisplayName = [...usersInRole].sort((a, b) => {
