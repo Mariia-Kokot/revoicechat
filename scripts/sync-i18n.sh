@@ -43,6 +43,7 @@ for repo in "${repos[@]}"; do
   else
     git add .
     git commit -m "chore(i18n): sync translations"
+    git push
     printf "✅ ${GREEN}${repo}${NC} committed\n"
   fi
   cd ..
@@ -54,6 +55,7 @@ if git diff --quiet && git diff --cached --quiet; then
 else
   git add .
   git commit -m "chore(i18n): update submodule references"
+  git push
   printf "✅ ${GREEN}root${NC} committed\n"
 fi
 
