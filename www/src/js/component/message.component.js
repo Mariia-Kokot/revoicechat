@@ -325,7 +325,7 @@ class MessageComponent extends HTMLElement {
                              name="user-picture-${user.id}" />
                     </div>
                     <div class="user">
-                        <h2 class="name" name="user-name-${user.id}">${user.displayName}</h2>
+                        <h2 class="name" title="${user.displayName}" name="user-name-${user.id}">${user.displayName}</h2>
                     </div>
                 </div>`;
     }
