@@ -1544,3 +1544,14 @@ summary::marker {
     text-overflow: ellipsis;
     width: 11rem;
 }
+
+.config-member-row {
+    display: flex;
+    cursor: pointer;
+    margin-bottom: 0.3rem;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    height: 3rem;
+    justify-content: space-between;
+    align-items: stretch;
+}
