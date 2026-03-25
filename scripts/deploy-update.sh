@@ -32,13 +32,13 @@ else
 fi
 
 echo "🛑 Stopping Docker Compose services..."
-docker-compose down
+docker compose down
 
 echo "🔨 Rebuilding and starting Docker Compose services..."
 # -d: detached mode (run in background)
 # --build: rebuild images before starting
-docker-compose up -d --build
+docker compose up -d --build
 
 echo "✅ Deployment completed successfully!"
 echo "📊 Checking container status:"
-docker-compose ps
+docker compose ps
