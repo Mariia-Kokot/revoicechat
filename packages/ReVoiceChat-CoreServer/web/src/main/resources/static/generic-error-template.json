@@ -1,0 +1,5 @@
+{
+  "error": "%s",
+  "message": "%s",
+  "swaggerDoc": "/api/q/swagger-ui"
+}
