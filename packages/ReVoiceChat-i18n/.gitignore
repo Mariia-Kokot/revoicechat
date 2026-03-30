@@ -1,0 +1,15 @@
+# Ignore everything
+*
+
+# Except these file types
+!*/
+!/.gitignore
+!/.gitattributes
+!LICENSE
+!*.md
+!lang.json
+!*.properties
+!generate-i18n.sh
+!/.scripts/*.sh
+
+/.generated
