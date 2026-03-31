@@ -2,7 +2,7 @@
 
 ## Core server
 
-[How to install the core server](./core-server/README.md)
+[How to install the core server](./core-server/INSTALL.md)
 
 ## Web client and Media server
 
