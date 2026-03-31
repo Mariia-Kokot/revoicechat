@@ -2,16 +2,16 @@
     Header set Access-Control-Allow-Origin "*"
     Header set Cache-Control "max-age=30, must-revalidate"
 
-    DocumentRoot /srv/rvc/revoicechat/web-client/www/
+    DocumentRoot /srv/revoicechat/web-client/www/
     DirectoryIndex index.html
 
-    <Directory /srv/rvc/revoicechat/web-client/www/>
+    <Directory /srv/revoicechat/web-client/www/>
             AllowOverride All
             Require all granted
     </Directory>
 
-    ErrorLog /var/log/rvc/client_error.log
-    TransferLog /var/log/rvc/client_access.log
+    ErrorLog /var/log/revoicechat/client_error.log
+    TransferLog /var/log/revoicechat/client_access.log
     LogLevel info
 </VirtualHost>
 
@@ -19,20 +19,20 @@
     Header set Access-Control-Allow-Origin "*"
     Header set Access-Control-Allow-Methods: GET,POST,OPTIONS,DELETE
 
-    DocumentRoot /srv/rvc/revoicechat/media-server/www/
+    DocumentRoot /srv/revoicechat/media-server/www/
     DirectoryIndex index.php
 
-    <Directory /srv/rvc/revoicechat/media-server/www/>
+    <Directory /srv/revoicechat/media-server/www/>
         AllowOverride all
         Require all granted
     </Directory>
 
-    <Directory /srv/rvc/revoicechat/media-server/www/data/>
+    <Directory /srv/revoicechat/media-server/www/data/>
         AllowOverride None
         Require all denied
     </Directory>
 
-    ErrorLog /var/log/rvc/media_error.log
-    TransferLog /var/log/rvc/media_access.log
+    ErrorLog /var/log/revoicechat/media_error.log
+    TransferLog /var/log/revoicechat/media_access.log
     LogLevel info
 </VirtualHost>

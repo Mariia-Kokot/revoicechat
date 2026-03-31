@@ -6,7 +6,9 @@
 
 ## Web client and Media server
 
-### Install Apache2
+All the following instruction and exemple assume you cloned this repository in `/srv`
+
+### Install Apache2 and PHP
 ```sh
 sudo apt-get install apache2-utils apache2 php libapache2-mod-php php-json php-zip php-curl php-gd -y
 ```
@@ -23,18 +25,14 @@ sudo a2enmod headers
 sudo a2enmod rewrite
 ```
 
-### Create VirtualHost
-
-Create new **VirtualHost**
-
-### Create new VirtualHost from exemple
+### Create new VirtualHost
 ```sh
 sudo cp ./revoicechat.conf.exemple /etc/apache2/sites-available/revoicechat.conf
 ```
 
 **Cache-Control** can be set to **max-age=86400, must-revalidate**
 
-Make sure **/var/log/rvc/** exist and apache2 can write to it
+Make sure **/var/log/revoicechat/** exist and apache2 can write to it
 
 Enable **VirtualHost**
 ```sh
