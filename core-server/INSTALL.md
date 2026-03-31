@@ -68,13 +68,13 @@ Edit `./server.properties` and update `quarkus.datasource.username` and `quarkus
  - run the `./scripts/run-app.sh`
 
 #### Option B : As a service (systemd)
-- Copy `rvc-core.service.example` to `rvc-core.service`
+- Copy `revoicechat.service.example` to `revoicechat.service`
 ```sh
-cp rvc-core.service.example rvc-core.service
+cp revoicechat.service.example revoicechat.service
 ```
 - Link the service file
 ```sh
-sudo systemctl link /srv/rvc/revoicechat/core-server/rvc-core.service
+sudo systemctl link /srv/rvc/revoicechat/core-server/revoicechat.service
 ```
 - Reload daemon
 ```sh
@@ -82,20 +82,20 @@ sudo systemctl daemon-reload
 ```
 - Enable service
 ```sh
-sudo systemctl enable rvc-core.service
+sudo systemctl enable revoicechat.service
 ```
 - Start service
 ```sh
-sudo systemctl start rvc-core.service
+sudo systemctl start revoicechat.service
 ```
 - Check service status
 ```sh
-sudo systemctl status rvc-core.service
+sudo systemctl status revoicechat.service
 ```
 
 Expected output
 ```log 
 * rvc-core.service - ReVoiceChat Core Server
-     Loaded: loaded (/etc/systemd/system/rvc-core.service; enabled; preset: enabled)
+     Loaded: loaded (/etc/systemd/system/revoicechat.service; enabled; preset: enabled)
      Active: active (running) since Sun 2025-08-24 12:14:11 UTC; 1s ago
 ```
