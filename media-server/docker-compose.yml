@@ -1,15 +1,15 @@
 services:
   media:
     build: .
-    container_name: php-server
+    container_name: revoicechat_media
     ports:
-      - "127.0.0.1:${MEDIA_SERVER_PORT:-8081}:80"
+      - "127.0.0.1:${MEDIA_SERVER_PORT:-8081}:8081"
     volumes:
       # Mount local www/data directory into container
       - ./www/data:/var/www/html/data
     restart: unless-stopped
     extra_hosts:
-      - "php-server:host-gateway"
+      - "revoicechat_media:host-gateway"
 networks:
   default:
     name: app-network
