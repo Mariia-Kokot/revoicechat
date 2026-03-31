@@ -1,5 +1,5 @@
 services:
-  php-app:
+  media:
     build: .
     container_name: php-server
     ports:
