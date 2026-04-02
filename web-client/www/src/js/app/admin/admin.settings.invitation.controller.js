@@ -60,7 +60,7 @@ export default class AdminSettingsInvitationController {
 
         // Name
         const DIV_NAME = document.createElement('div');
-        DIV_NAME.className = "name invitation";
+        DIV_NAME.className = "invitation";
         DIV_NAME.innerText = `${data.id} (${data.status})`;
         DIV.appendChild(DIV_NAME);
 

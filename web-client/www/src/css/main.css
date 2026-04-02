@@ -1009,6 +1009,8 @@ textarea.config-item {
     overflow: auto;
 }
 
+.technical-list td,
+.config-item .invitation,
 .config-item .name {
     padding-top: 0.25rem;
     padding-left: 0.5rem;
