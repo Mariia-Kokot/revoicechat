@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Deployment script to update the project and restart services
-# Steps: pull project, update submodules, rebuild and restart Docker Compose
-
 set -e  # Exit on any error
 
 echo "🔄 Pulling latest changes from repository..."
@@ -26,12 +23,10 @@ else
     echo "⚠️  Warning: ./settings.media.ini not found"
 fi
 
-echo "🛑 Stopping Docker Compose services..."
+echo "🛑 Stopping Podman Compose services..."
 podman compose down
 
-echo "🔨 Rebuilding and starting Docker Compose services..."
-# -d: detached mode (run in background)
-# --build: rebuild images before starting
+echo "🔨 Rebuilding and starting Podman Compose services..."
 podman compose up -d --build
 
 echo "✅ Deployment completed successfully!"

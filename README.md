@@ -30,8 +30,14 @@ cd revoicechat/
 - You can modify `server.core.properties` and `settings.media.ini` if you need to override some value
 - Deploy all the docker images
 ```sh
-sudo ./scripts/deploy-update.sh
+sudo ./scripts/docker/deploy.sh
 ```
+
+> The script also exists for podman
+> ```sh
+> ./scripts/podman/deploy.sh
+> ```
+
 NB : this script will automatically update the project
 
 ## First time setup
