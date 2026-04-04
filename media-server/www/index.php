@@ -27,7 +27,12 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         if (isset($_GET['profiles']) && !empty($_GET['profiles'])) {
-            rvc_read_file('profiles', $_GET['profiles']);
+            if(isset($_GET['server'])){
+                rvc_read_file('profiles', $_GET['profiles'], 'server');
+            }
+            else{
+                rvc_read_file('profiles', $_GET['profiles']);
+            }
             break;
         }
 
@@ -42,7 +47,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         if (isset($_GET['profiles']) && !empty($_GET['profiles'])) {
-            post_profile_upload($_GET['profiles']);
+            post_profile_upload();
             break;
         }
 
@@ -59,13 +64,17 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 exit;
 
 
-function post_profile_upload(string $id)
+function post_profile_upload()
 {
     if (url_with_id("profiles", $matches)) {
         $id = $matches[1];
         $user = get_current_user_from_auth();
+        $server = get_server_by_id($id);
 
-        if ($id != $user['id'] && $user['type'] != 'ADMIN') {
+        $userToUpdate = $id == $user['id'] || $user['type'] == 'ADMIN';
+        $serverToUpdate = $server != null && $server['canUpdate'];
+
+        if (!$userToUpdate && !$serverToUpdate) {
             echo json_encode(['error' => 'You cannot edit this profile', 'user' => $user]);
             http_response_code(401);
             return;
@@ -88,6 +97,7 @@ function post_profile_upload(string $id)
             echo json_encode(['error' => $e]);
             exit;
         }
+        profile_update_picture($id);
 
         // Resize image
         if (in_array(exif_imagetype($file), SUPPORTED_IMAGETYPE)) {

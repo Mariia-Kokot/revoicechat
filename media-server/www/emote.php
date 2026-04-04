@@ -15,6 +15,12 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             break;
         }
 
+        // Emojis Any
+        if (isset($_GET['assets']) && isset($_GET['id']) && !empty($_GET['id'])) {
+            get_emoji_assets($_GET['id']);
+            break;
+        }
+
         // Emojis global only
         if (isset($_GET['global'])) {
             if (isset($_GET['all'])) {
@@ -70,6 +76,19 @@ function get_emoji_any(string $name)
     exit;
 }
 
+function get_emoji_assets(string $name)
+{
+    $rootDir = __DIR__ . "/data/emojis/assets";
+
+    if (is_file("$rootDir/$name")) {
+        rvc_read_file("emojis/assets", $name);
+        exit;
+    }
+
+    http_response_code(404);
+    exit;
+}
+
 function get_emojis_all(string $where)
 {
     $workingDirectory = __DIR__ . "/data/emojis/$where/";
@@ -115,6 +134,7 @@ function post_emoji_upload(string $id)
         attachment_update_status($id, "CORRUPT");
 
         http_response_code(500);
+        error_log("Error while upload emoji $id, error: $e");
         echo json_encode(['error' => $e]);
         exit;
     }
