@@ -17,6 +17,7 @@ www/data/emojis/global/*
 !www/data/profiles/.keep
 !www/data/emojis/.keep
 !www/data/emojis/global/.keep
+!www/data/emojis/assets/*
 
 # Settings
 settings.ini
