@@ -27,10 +27,9 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         if (isset($_GET['profiles']) && !empty($_GET['profiles'])) {
-            if(isset($_GET['server'])){
+            if (isset($_GET['server'])) {
                 rvc_read_file('profiles', $_GET['profiles'], 'server');
-            }
-            else{
+            } else {
                 rvc_read_file('profiles', $_GET['profiles']);
             }
             break;
@@ -103,7 +102,7 @@ function post_profile_upload()
         if (in_array(exif_imagetype($file), SUPPORTED_IMAGETYPE)) {
             $image = new SimpleImage();
             $image->load($file);
-            $image->resizeToHeight(200);
+            $image->resize(256, 256);
             $image->save($file);
         }
 
