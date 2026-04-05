@@ -139,7 +139,7 @@ export default class VoiceController {
 
         const userData = data.user;
         const voiceContent = document.getElementById(`voice-users-${data.roomId}`);
-        voiceContent.appendChild(this.#createUserElement({ user: userData, streams: [] }));
+        voiceContent?.appendChild(this.#createUserElement({ user: userData, streams: [] }));
 
         // NOT our room
         if (data.roomId !== this.#room.id) { return; }
@@ -209,10 +209,10 @@ export default class VoiceController {
         }
 
         if (enabled) {
-            this.#cachedElement.usersGlow[userId].classList.add('active');
+            this.#cachedElement.usersGlow[userId]?.classList.add('active');
         }
         else {
-            this.#cachedElement.usersGlow[userId].classList.remove('active');
+            this.#cachedElement.usersGlow[userId]?.classList.remove('active');
         }
     }
 
@@ -510,7 +510,9 @@ export default class VoiceController {
     async #updateUserCounter(roomId) {
         const count = await this.usersCount(roomId);
         const element = document.getElementById(`room-extension-${roomId}`);
-        element.innerHTML = `${count}<revoice-icon-user></revoice-icon-user>`
+        if (element) {
+            element.innerHTML = `${count}<revoice-icon-user></revoice-icon-user>`;
+        }
     }
 
     // Add or remove controls on users in room
