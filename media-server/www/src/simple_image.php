@@ -28,37 +28,60 @@ class SimpleImage
 
     function load($filename)
     {
-
         $image_info = getimagesize($filename);
         $this->image_type = $image_info[2];
-        if ($this->image_type == IMAGETYPE_JPEG) {
 
-            $this->image = imagecreatefromjpeg($filename);
-        } elseif ($this->image_type == IMAGETYPE_GIF) {
+        imagealphablending($this->image, false);
+        imagesavealpha($this->image, true);
 
-            $this->image = imagecreatefromgif($filename);
-        } elseif ($this->image_type == IMAGETYPE_PNG) {
+        switch ($this->image_type) {
+            case IMAGETYPE_JPEG:
+                $this->image = imagecreatefromjpeg($filename);
+                break;
 
-            $this->image = imagecreatefrompng($filename);
+            case IMAGETYPE_GIF:
+                $this->image = imagecreatefromgif($filename);
+                break;
+
+            case IMAGETYPE_PNG:
+                $this->image = imagecreatefrompng($filename);
+                break;
+
+            default:
+                error_log("Unsupported image type");
+                break;
         }
     }
+
     function save($filename, $image_type = IMAGETYPE_JPEG, $compression = 75, $permissions = null)
     {
+        imagealphablending($this->image, false);
+        imagesavealpha($this->image, true);
 
-        if ($image_type == IMAGETYPE_JPEG) {
-            imagejpeg($this->image, $filename, $compression);
-        } elseif ($image_type == IMAGETYPE_GIF) {
+        switch ($image_type) {
+            case IMAGETYPE_JPEG:
+                imagejpeg($this->image, $filename, $compression);
+                break;
 
-            imagegif($this->image, $filename);
-        } elseif ($image_type == IMAGETYPE_PNG) {
+            case IMAGETYPE_GIF:
+                imagegif($this->image, $filename);
+                break;
 
-            imagepng($this->image, $filename);
+            case IMAGETYPE_PNG:
+                imagepng($this->image, $filename);
+                break;
+
+            default:
+                error_log("Unsupported image type");
+                break;
         }
+
         if ($permissions != null) {
 
             chmod($filename, $permissions);
         }
     }
+
     function output($image_type = IMAGETYPE_JPEG)
     {
 
@@ -72,16 +95,19 @@ class SimpleImage
             imagepng($this->image);
         }
     }
+
     function getWidth()
     {
 
         return imagesx($this->image);
     }
+
     function getHeight()
     {
 
         return imagesy($this->image);
     }
+
     function resizeToHeight($height)
     {
 
