@@ -31,7 +31,7 @@
         <!-- Private Container -->
         <div class="private hidden" id="route-private">
             <!-- Sidebar Private messages-->
-            <div class="sidebar private-messages" id="friends-sidebar">
+            <div class="sidebar private-messages" id="private-messages">
                 <div class="header">
                     <revoice-icon-private-discussion></revoice-icon-private-discussion>
                     <h2 data-i18n="private.messages.title">Private messages</h2>
@@ -40,10 +40,8 @@
                     </div>
                 </div>
 
-                <!-- User List -->
-                <div class="content scrollbar" id="friends">
-                    <!-- JS -->
-                </div>
+                <!-- Private messages list -->
+                <div class="private-message content scrollbar" id="private-messages-list"></div>
             </div>
 
             <!-- Private messages -->
@@ -62,7 +60,7 @@
                 <div class="room-container" id="private-container">
                     <div class="room-cache scrollbar" id="private-cache-container"></div>
                     <!-- Chat Control -->
-                    <div class="room-control-container">
+                    <div class="room-control-container hidden" id="private-message-controls">
                         <div class="text-control">
                             <div class="text-control-reply hidden" id="private-text-reply-message" data-message-id="">
                             </div>

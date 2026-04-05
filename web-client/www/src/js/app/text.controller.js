@@ -1,11 +1,11 @@
 import Alert from './utils/alert.js';
-import {humanFileSize, sanitizeString, timestampToText} from "../lib/tools.js";
-import {i18n} from "../lib/i18n.js";
+import { humanFileSize, sanitizeString, timestampToText } from "../lib/tools.js";
+import { i18n } from "../lib/i18n.js";
 import MediaServer from "./media/media.server.js";
 import CoreServer from "./core/core.server.js";
 import Modal from "../component/modal.component.js";
-import {emojiPicker} from "./emoji.js";
-import {renderEmojis} from "../component/emoji.component.js";
+import { emojiPicker } from "./emoji.js";
+import { renderEmojis } from "../component/emoji.component.js";
 
 export default class TextController {
     static MODE_SEND = 0;
@@ -41,6 +41,8 @@ export default class TextController {
         attachmentsRemove: null,
     }
 
+    #privateRoom = false;
+
     /**
      * @param {UserController} user
      * @param {RoomController} room
@@ -49,6 +51,7 @@ export default class TextController {
     constructor(user, room, privateRoom = false) {
         this.#user = user;
         this.#room = room;
+        this.#privateRoom = privateRoom;
         if (privateRoom) {
             this.#elements.cacheContainer = document.getElementById("private-cache-container");
             this.#elements.textReplyMessage = document.getElementById("private-text-reply-message");
@@ -87,6 +90,21 @@ export default class TextController {
             }
         }
         this.#observeReply();
+    }
+
+    attachEvents() {
+        this.#elements.textInput.addEventListener('keydown', async (event) => await this.#eventHandler(event));
+        this.#elements.textInput.addEventListener('oninput', () => this.oninput(this.#elements.textInput));
+        this.#elements.textInput.addEventListener('paste', (event) => this.#pasteHandler(event));
+        this.#elements.attachmentsAdd.addEventListener('click', () => this.#addAttachment());
+        this.#elements.attachmentsRemove.addEventListener('click', () => this.#removeAttachment());
+        this.#elements.cacheContainer.addEventListener("scroll", () => {
+            const element = this.#cachedRooms[this.#room.id];
+            if (element) {
+                element.scrollTop = this.#elements.cacheContainer.scrollTop;
+            }
+            this.#loadMore(element);
+        });
     }
 
     /** @param {SanctionRepresentation} sanction */
@@ -150,21 +168,6 @@ export default class TextController {
         this.#elements.textReplyMessage.dataset.messageId = "";
     }
 
-    attachEvents() {
-        this.#elements.textInput.addEventListener('keydown', async (event) => await this.#eventHandler(event));
-        this.#elements.textInput.addEventListener('oninput', () => this.oninput(this.#elements.textInput));
-        this.#elements.textInput.addEventListener('paste', (event) => this.#pasteHandler(event));
-        this.#elements.attachmentsAdd.addEventListener('click', () => this.#addAttachment());
-        this.#elements.attachmentsRemove.addEventListener('click', () => this.#removeAttachment());
-        this.#elements.cacheContainer.addEventListener("scroll", () => {
-            const element = this.#cachedRooms[this.#room.id];
-            if (element) {
-                element.scrollTop = this.#elements.cacheContainer.scrollTop;
-            }
-            this.#loadMore(element);
-        });
-    }
-
     #getTextContentElement(roomId) {
         if (!this.#cachedRooms[roomId]) {
             const textContent = document.createElement("div");
@@ -174,7 +177,7 @@ export default class TextController {
                 textContent.classList.add('hidden');
             }
             let obj = {};
-            obj[roomId] = {content: textContent, scrollTop: null, firstMessageId: null};
+            obj[roomId] = { content: textContent, scrollTop: null, firstMessageId: null };
             Object.assign(this.#cachedRooms, obj);
 
             textContent.addEventListener('scroll', () => {
@@ -256,7 +259,7 @@ export default class TextController {
         room.content.classList.remove('hidden');
         this.#elements.cacheContainer.scrollTop = room.scrollTop;
 
-        if (this.#isAtBottom(room.content)) {
+        if (this.#isAtBottom(room.content) && !this.#privateRoom) {
             this.#markAsRead(this.#room.id);
         }
     }
@@ -402,7 +405,7 @@ export default class TextController {
         if (this.#elements.textAttachment && this.mode === TextController.MODE_SEND) {
             for (const element of this.#elements.textAttachment.files) {
                 if (element.size < this.#attachmentMaxSize) {
-                    data.medias.push({name: element.name});
+                    data.medias.push({ name: element.name });
                     attachments[element.name] = element;
                 } else {
                     await Modal.toggle({
@@ -486,7 +489,7 @@ export default class TextController {
      * @param {MessageRepresentation} messageData
      * @param {boolean} urlPreview
      */
-    create(messageData, {urlPreview = true} = {}) {
+    create(messageData, { urlPreview = true } = {}) {
         const CONTAINER = document.createElement('div');
         CONTAINER.className = `message-container-message`;
         if (messageData.answeredTo) {
@@ -548,7 +551,7 @@ export default class TextController {
         answerDiv.onclick = () => {
             const originalMessage = document.getElementById(`container-${answeredTo.id}`);
             if (originalMessage) {
-                originalMessage.scrollIntoView({behavior: 'smooth', block: 'center'});
+                originalMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 originalMessage.style.backgroundColor = 'var(--highlight-color, rgba(59, 130, 246, 0.1))';
                 setTimeout(() => {
                     originalMessage.style.backgroundColor = '';

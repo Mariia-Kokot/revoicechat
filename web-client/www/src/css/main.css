@@ -436,6 +436,7 @@ svg {
     height: 100%;
 }
 
+.private-message .user-profile .icon,
 .sidebar.users .content .icon {
     border-radius: 9999px;
     width: 2rem;
@@ -837,6 +838,7 @@ svg {
 }
 
 
+.private-message .user .name,
 .voice-profile .user,
 .sidebar.users .content .user,
 .status-bloc-1 .user {
@@ -847,6 +849,7 @@ svg {
     font-weight: 600;
 }
 
+.private-message .user .name,
 .sidebar.users .content .user .name {
     padding-top: 0.25rem;
     font-weight: 500;
@@ -863,6 +866,8 @@ svg {
     cursor: pointer;
     padding: 0.5rem;
     height: 3rem;
+    margin: 0.15rem;
+    border-radius: 5px;
 }
 
 /* Scroll */
