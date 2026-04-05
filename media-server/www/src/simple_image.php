@@ -30,9 +30,6 @@ class SimpleImage
         $image_info = getimagesize($filename);
         $this->image_type = $image_info[2];
 
-        imagealphablending($this->image, false);
-        imagesavealpha($this->image, true);
-
         switch ($this->image_type) {
             case IMAGETYPE_JPEG:
                 $this->image = imagecreatefromjpeg($filename);
@@ -40,10 +37,14 @@ class SimpleImage
 
             case IMAGETYPE_GIF:
                 $this->image = imagecreatefromgif($filename);
+                imagealphablending($this->image, false);
+                imagesavealpha($this->image, true);
                 break;
 
             case IMAGETYPE_PNG:
                 $this->image = imagecreatefrompng($filename);
+                imagealphablending($this->image, false);
+                imagesavealpha($this->image, true);
                 break;
 
             default:
@@ -52,12 +53,9 @@ class SimpleImage
         }
     }
 
-    function save($filename, $image_type = IMAGETYPE_JPEG, $compression = 75, $permissions = null)
+    function save($filename, $compression = 75, $permissions = null)
     {
-        imagealphablending($this->image, false);
-        imagesavealpha($this->image, true);
-
-        switch ($image_type) {
+        switch ($this->image_type) {
             case IMAGETYPE_JPEG:
                 imagejpeg($this->image, $filename, $compression);
                 break;
@@ -76,14 +74,13 @@ class SimpleImage
         }
 
         if ($permissions != null) {
-
             chmod($filename, $permissions);
         }
     }
 
-    function output($image_type = IMAGETYPE_JPEG)
+    function output()
     {
-        switch ($image_type) {
+        switch ($this->image_type) {
             case IMAGETYPE_JPEG:
                 imagejpeg($this->image);
                 break;
@@ -112,30 +109,58 @@ class SimpleImage
         return imagesy($this->image);
     }
 
-    function resizeToHeight($height)
+    function resizeToHeight(int $height)
     {
         $ratio = $height / $this->getHeight();
-        $width = $this->getWidth() * $ratio;
+        $width = intval($this->getWidth() * $ratio);
         $this->resize($width, $height);
     }
 
-    function resizeToWidth($width)
+    function resizeToWidth(int $width)
     {
         $ratio = $width / $this->getWidth();
-        $height = $this->getheight() * $ratio;
+        $height = intval($this->getheight() * $ratio);
         $this->resize($width, $height);
     }
 
     function scale($scale)
     {
-        $width = $this->getWidth() * $scale / 100;
-        $height = $this->getheight() * $scale / 100;
+        $width =  intval($this->getWidth() * $scale / 100);
+        $height = intval($this->getheight() * $scale / 100);
         $this->resize($width, $height);
     }
 
-    function resize($width, $height)
+    function resize(int $width, int $height)
     {
         $new_image = imagecreatetruecolor($width, $height);
+
+        // Transparency for PNG
+        if ($this->image_type == IMAGETYPE_PNG) {
+            imagealphablending($new_image, false);
+            imagesavealpha($new_image, true);
+
+            $transparent = imagecolorallocatealpha($new_image, 0, 0, 0, 127);
+            imagefill($new_image, 0, 0, $transparent);
+        }
+
+        // Transparency for GIF
+        if ($this->image_type == IMAGETYPE_GIF) {
+            $transparent_index = imagecolortransparent($this->image);
+
+            if ($transparent_index >= 0) {
+                $transparent_color = imagecolorsforindex($this->image, $transparent_index);
+                $transparent_index_new = imagecolorallocate(
+                    $new_image,
+                    $transparent_color['red'],
+                    $transparent_color['green'],
+                    $transparent_color['blue']
+                );
+
+                imagefill($new_image, 0, 0, $transparent_index_new);
+                imagecolortransparent($new_image, $transparent_index_new);
+            }
+        }
+
         imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight());
         $this->image = $new_image;
     }
