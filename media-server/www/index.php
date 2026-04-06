@@ -9,6 +9,11 @@ $body = json_decode(file_get_contents('php://input'), true, 512, JSON_OBJECT_AS_
 
 switch ($_SERVER["REQUEST_METHOD"]) {
     case 'GET':
+        if (isset($_GET['ping'])){
+            http_response_code(200);
+            break;
+        }
+
         if (isset($_GET['maxfilesize'])) {
             require_once 'src/file_upload.php';
             header(CONTENT_TYPE_APPLICATION_JSON);
