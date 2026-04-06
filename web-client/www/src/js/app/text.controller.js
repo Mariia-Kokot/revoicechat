@@ -604,7 +604,7 @@ export default class TextController {
         const picture = document.createElement('img');
         picture.src = MediaServer.profiles(messageData.user.id);
         picture.alt = "PFP"
-        picture.className = "icon ring-2"
+        picture.className = "icon"
         picture.dataset.id = messageData.user.id
         MESSAGE.appendChild(picture);
     }

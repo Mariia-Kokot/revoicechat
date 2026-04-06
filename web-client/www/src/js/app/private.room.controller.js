@@ -83,7 +83,7 @@ export default class PrivateRoomController extends RoomController {
         DIV.className = `${id} user-profile`
         DIV.innerHTML = `
             <div class="relative">
-                <img src="${profilePicture}" alt="PFP" class="icon ring-2" data-id="${id}" name="user-picture-${id}" />
+                <img src="${profilePicture}" alt="PFP" class="icon" data-id="${id}" name="user-picture-${id}" />
             </div>
             <div class="user">
                 <h2 class="name" name="user-name-${id}" title="${name}" >${name}</h2>

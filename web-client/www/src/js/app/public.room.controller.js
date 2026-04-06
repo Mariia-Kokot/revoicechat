@@ -283,7 +283,7 @@ export default class PublicRoom extends RoomController{
         DIV.className = `${id} user-profile`
         DIV.innerHTML = `
             <div class="relative">
-                <img src="${profilePicture}" alt="PFP" class="icon ring-2" data-id="${id}" name="user-picture-${id}" />
+                <img src="${profilePicture}" alt="PFP" class="icon" data-id="${id}" name="user-picture-${id}" />
                 <revoice-status-dot name="dot-${id}" color="${statusToColor(status)}"></revoice-status-dot>
             </div>
             <div class="user">

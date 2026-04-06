@@ -46,7 +46,7 @@ export default class AdminSettingsMembersController {
         profilPicture.id = `user-picture-${user.id}`
         profilPicture.src = MediaServer.profiles(user.id);
         profilPicture.alt = "PFP"
-        profilPicture.className = "icon ring-2"
+        profilPicture.className = "icon"
         return profilPicture;
     }
 

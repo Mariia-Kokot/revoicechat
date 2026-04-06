@@ -320,7 +320,7 @@ class MessageComponent extends HTMLElement {
                     <div class="relative">
                         <img src="${MediaServer.profiles(user.id)}" alt="PFP"
                              style="border-radius: 9999px;width: 2rem; height: 2rem; aspect-ratio: auto;"
-                             class="icon ring-2"
+                             class="icon"
                              data-id="${user.id}"
                              name="user-picture-${user.id}" />
                     </div>
