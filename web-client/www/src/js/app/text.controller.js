@@ -259,7 +259,7 @@ export default class TextController {
         room.content.classList.remove('hidden');
         this.#elements.cacheContainer.scrollTop = room.scrollTop;
 
-        if (this.#isAtBottom(room.content) && !this.#privateRoom) {
+        if (this.#isAtBottom(room.content)) {
             this.#markAsRead(this.#room.id);
         }
     }
@@ -332,6 +332,11 @@ export default class TextController {
                 const serverToNotify = document.getElementById(`server-notification-dot-${data.message.serverId}`);
                 serverToNotify.classList.remove('hidden');
                 serverToNotify.setAttribute('mentions', '' + (serverToNotify.mentionsAttribute + mention));
+            }
+            else {
+                const privateNotification = document.getElementById('private-message-notification-dot');
+                privateNotification.classList.remove('hidden');
+                privateNotification.setAttribute('mentions', '' + (privateNotification.mentionsAttribute + mention));
             }
         }
 
@@ -727,10 +732,19 @@ export default class TextController {
         currentRoom.classList.add('hidden');
         currentRoom.setAttribute('mentions', '0')
 
-        const currentServer = document.getElementById(`server-notification-dot-${RVC.server.id}`);
-        currentServer.setAttribute('mentions', '' + (currentServer.mentionsAttribute - mentionsToRemove))
-        if (document.querySelectorAll("#rooms revoice-notification-dot:not(.hidden)").length === 0) {
-            currentServer.classList.add('hidden');
+        if (this.#privateRoom) {
+            const currentPrivate = document.getElementById(`private-message-notification-dot`);
+            currentPrivate.setAttribute('mentions', '' + (currentPrivate.mentionsAttribute - mentionsToRemove))
+            if (document.querySelectorAll("#user-profile revoice-notification-dot:not(.hidden)").length === 0) {
+                currentPrivate.classList.add('hidden');
+            }
+        }
+        else {
+            const currentServer = document.getElementById(`server-notification-dot-${RVC.server.id}`);
+            currentServer.setAttribute('mentions', '' + (currentServer.mentionsAttribute - mentionsToRemove))
+            if (document.querySelectorAll("#rooms revoice-notification-dot:not(.hidden)").length === 0) {
+                currentServer.classList.add('hidden');
+            }
         }
     }
 

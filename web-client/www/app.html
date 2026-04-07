@@ -20,11 +20,13 @@
         <!-- Sidebar instances and hosts-->
         <div class="sidebar instances-list">
             <div class="header">
-                <button id="private-open">
-                    <img src="./src/img/favicon.png" alt="DM" data-i18n-title="private.title" />
-                </button>
+                <div class="server-block">
+                    <revoice-notification-dot id="private-message-notification-dot" class="server-notification hidden" mentions="0"></revoice-notification-dot>
+                    <button id="private-open">
+                        <img src="./src/img/favicon.png" alt="DM" data-i18n-title="private.title" />
+                    </button>
+                </div>
             </div>
-
             <div class="instances scrollbar" id="instances"></div>
         </div>
 

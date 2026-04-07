@@ -56,20 +56,20 @@ export default class PrivateRoomController extends RoomController {
             return user.id != this.user.id;
         })
 
-        if(usersNoSelf.length === 0){
+        if (usersNoSelf.length === 0) {
             name = this.user.displayName;
             profilePicture = MediaServer.profiles(this.user.id);
-        } else if(usersNoSelf.length === 1){
+        } else if (usersNoSelf.length === 1) {
             name = room.name || usersNoSelf[0].displayName
             profilePicture = MediaServer.profiles(usersNoSelf[0].id);
         } else {
             let names = "";
             let i = 0;
-            for(const user of usersNoSelf){
-                if(i === 0){
+            for (const user of usersNoSelf) {
+                if (i === 0) {
                     names += user.displayName;
                 }
-                else{
+                else {
                     names += `, ${user.displayName}`;
                 }
                 i++
@@ -81,14 +81,38 @@ export default class PrivateRoomController extends RoomController {
         const DIV = document.createElement('div');
         DIV.id = id;
         DIV.className = `${id} user-profile`
-        DIV.innerHTML = `
-            <div class="relative">
-                <img src="${profilePicture}" alt="PFP" class="icon" data-id="${id}" name="user-picture-${id}" />
-            </div>
-            <div class="user">
-                <h2 class="name" name="user-name-${id}" title="${name}" >${name}</h2>
-            </div>
-        `;
+
+        const pictureRoot = document.createElement('div');
+        pictureRoot.className = "relative";
+        const picture = document.createElement('img');
+        picture.src = profilePicture;
+        picture.className = "icon";
+        picture.setAttribute('data-id', id);
+        picture.name = `user-picture-${id}`;
+
+        pictureRoot.appendChild(picture);
+        DIV.appendChild(pictureRoot);
+
+        const nameRoot = document.createElement('div');
+        nameRoot.className = "user";
+        const nameElement = document.createElement('h2');
+        nameElement.className = "name";
+        nameElement.name = `user-name-${id}`;
+        nameElement.title = name;
+        nameElement.innerText = name;
+
+        nameRoot.appendChild(nameElement);
+        DIV.appendChild(nameRoot);
+
+        const notification = document.createElement('revoice-notification-dot')
+        notification.id = `room-extension-dot-${room.id}`
+        notification.style.margin = 'auto'
+        if (room.unreadMessages.hasUnreadMessage) {
+            notification.setAttribute('mentions', '' + room.unreadMessages.mentions)
+        } else {
+            notification.className = 'hidden'
+        }
+        DIV.appendChild(notification);
 
         DIV.addEventListener('click', () => { this.#selectRoom(id, name, profilePicture) })
 
@@ -138,7 +162,7 @@ export default class PrivateRoomController extends RoomController {
                 data.users.push(user);
 
                 await CoreServer.fetch(`/private-message`, 'POST', data);
-                
+
                 await this.load();
             }
         });
