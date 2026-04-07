@@ -58,7 +58,7 @@ export default class ServerController {
 
         // Select default server
         if (this.id) {
-            this.select(this.id, this.name);
+            this.select(this.id, this.name, true);
         } else {
             const server = instancesSortedByName[0]
             if (server) {
@@ -73,6 +73,52 @@ export default class ServerController {
             const deleteButton = document.getElementById('server-delete');
             deleteButton.addEventListener('click', () => this.#delete());
             deleteButton.classList.remove('hidden');
+        }
+    }
+
+    select(id, name, forceLoad = false) {
+        if (!id) {
+            console.error("Server id is null or undefined");
+            return;
+        }
+
+        const currentInstance = document.getElementById(this.id);
+        if (currentInstance) {
+            currentInstance.classList.remove('active');
+        }
+
+        this.router.routeTo(Router.APP);
+        document.getElementById(id).classList.add('active');
+
+        if (this.id !== id || forceLoad) {
+            this.#updateServerName(id, name);
+            this.room.load(id);
+        }
+    }
+
+    /** @param {ServerUpdateNotification} data */
+    update(data) {
+        switch (data.action) {
+            case "ADD":
+                break;
+            case "REMOVE":
+                break;
+            case "MODIFY": {
+                if (data.server.id === this.id) {
+                    this.#updateServerName(this.id, data.server.name);
+                    this.room.load(this.id);
+                }
+                return;
+            }
+            default:
+                return;
+        }
+    }
+
+    /** @param {NewUserInServer} data */
+    updateUserInServer(data) {
+        if (this.id === data.server) {
+            this.room.loadUsers();
         }
     }
 
@@ -296,55 +342,11 @@ export default class ServerController {
         });
     }
 
-    select(id, name) {
-        if (!id) {
-            console.error("Server id is null or undefined");
-            return;
-        }
-
-        const currentInstance = document.getElementById(this.id);
-        if (currentInstance) {
-            currentInstance.classList.remove('active');
-        }
-
-        document.getElementById(id).classList.add('active');
-
-        this.#updateServerName(id, name);
-        this.room.load(id);
-        this.router.routeTo(Router.APP);
-    }
-
     #updateServerName(id, name) {
         this.id = id;
         this.name = name;
         document.getElementById("server-name").innerText = name;
         document.getElementById("server-picture").src = MediaServer.serverProfiles(id);
         document.title = `ReVoiceChat - ${name}`;
-    }
-
-    /** @param {ServerUpdateNotification} data */
-    update(data) {
-        switch (data.action) {
-            case "ADD":
-                break;
-            case "REMOVE":
-                break;
-            case "MODIFY": {
-                if (data.server.id === this.id) {
-                    this.#updateServerName(this.id, data.server.name);
-                    this.room.load(this.id);
-                }
-                return;
-            }
-            default:
-                return;
-        }
-    }
-
-    /** @param {NewUserInServer} data */
-    updateUserInServer(data) {
-        if (this.id === data.server) {
-            this.room.loadUsers();
-        }
     }
 }
