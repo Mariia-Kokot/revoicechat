@@ -152,7 +152,9 @@
 
 @media screen and (max-width: 600px) {
     .emoji-picker {
-        right: 0;
+        right: 0 !important;
+        left: 2rem !important;
+        top: 12rem !important;
     }
 }
 
