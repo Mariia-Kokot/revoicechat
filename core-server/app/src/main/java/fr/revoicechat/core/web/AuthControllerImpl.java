@@ -7,7 +7,7 @@ import java.util.function.Function;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import fr.revoicechat.core.model.User;
-import fr.revoicechat.core.representation.UserRepresentation;
+import fr.revoicechat.core.representation.NewUserRepresentation;
 import fr.revoicechat.core.service.user.UserService;
 import fr.revoicechat.core.technicaldata.login.UserPassword;
 import fr.revoicechat.core.technicaldata.login.UserRecoveryCode;
@@ -42,7 +42,7 @@ public class AuthControllerImpl implements AuthController {
 
   @Override
   @PermitAll
-  public UserRepresentation signup(NewUserSignup user) {
+  public NewUserRepresentation signup(NewUserSignup user) {
     return Mapper.map(userService.create(user));
   }
 

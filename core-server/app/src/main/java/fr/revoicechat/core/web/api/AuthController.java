@@ -7,6 +7,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import fr.revoicechat.core.representation.NewUserRepresentation;
 import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.core.technicaldata.login.UserPassword;
 import fr.revoicechat.core.technicaldata.login.UserRecoveryCode;
@@ -39,7 +40,7 @@ public interface AuthController {
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/signup")
-  UserRepresentation signup(NewUserSignup user);
+  NewUserRepresentation signup(NewUserSignup user);
 
   @Operation(
       summary = "User login",

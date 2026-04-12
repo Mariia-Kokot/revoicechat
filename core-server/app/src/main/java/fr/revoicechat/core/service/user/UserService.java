@@ -138,7 +138,7 @@ public class UserService implements AuthenticatedUserEntityFinder {
   @Transactional
   public User updateConnectedUser(final UpdatableUserData userData) {
     User user = userHolder.get();
-    Optional.ofNullable(userData.password()).ifPresent(psw -> setPassword(user, psw));
+    Optional.ofNullable(userData.password()).filter(not(PasswordUpdated::isEmpty)).ifPresent(psw -> setPassword(user, psw));
     Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
     Optional.ofNullable(userData.status()).ifPresent(user::setStatus);
     entityManager.persist(user);

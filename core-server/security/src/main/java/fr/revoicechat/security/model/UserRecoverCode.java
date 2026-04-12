@@ -24,6 +24,7 @@ public class UserRecoverCode {
   private String code;
   @Enumerated(EnumType.STRING)
   private RecoverCodeStatus status;
+  @Column(name = "CREATED_AT")
   private LocalDateTime createdAt;
 
   public UUID getUserId() {

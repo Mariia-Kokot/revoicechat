@@ -1,5 +1,13 @@
 import { SpinnerOnButton } from './component/button.spinner.component.js';
-import {apiFetch, getCookie, getQueryVariable, getUserLanguage, initTools, setCookie} from "./lib/tools.js";
+import {
+    apiFetch,
+    copyToClipboard,
+    getCookie,
+    getQueryVariable,
+    getUserLanguage,
+    initTools,
+    setCookie
+} from "./lib/tools.js";
 import './component/icon.component.js';
 import { i18n } from "./lib/i18n.js";
 import Modal from "./component/modal.component.js";
@@ -183,9 +191,26 @@ async function register(loginData, host) {
             throw new Error("Not OK");
         }
 
+        const result = /** @type {NewUserRepresentation} */ await response.json();
+
         Modal.toggle({
             icon: "success",
             title: i18n.translateOne('login.register.success', host),
+            html: `<div data-i18n="login.register.success.recover.codes">your recover codes</div>
+                   <div style="background-color: var(--pri-bg-color); padding: 1rem; margin: 1rem;">
+                       <div class="icon" id="recover-codes-clip" style="position: absolute; cursor: pointer;">
+                           <revoice-icon-clipboard></revoice-icon-clipboard>
+                       </div>
+                       <code id="recover-codes"></code>
+                   </div>`,
+            didOpen: async () => {
+                const codes = document.getElementById('recover-codes');
+                codes.innerText = result.recoverCodes.join('\n')
+                const clipButton = document.getElementById('recover-codes-clip');
+                clipButton.onclick = () => {
+                    copyToClipboard(result.recoverCodes.join('\n'))
+                }
+            },
             allowOutsideClick: false,
         }).then(() => {
             document.location.reload();

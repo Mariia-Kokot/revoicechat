@@ -21,7 +21,8 @@ import jakarta.ws.rs.WebApplicationException;
 public class JwtService implements SecurityTokenService {
   private static final Logger LOG = LoggerFactory.getLogger(JwtService.class);
 
-  private static final long DAY_TIME = 1000L * 3600 * 24;
+  private static final long HOUR_TIME = 1000L * 3600;
+  private static final long DAY_TIME = HOUR_TIME * 24;
 
   private final JWTParser jwtParser;
   private final TokenBlacklistService tokenBlacklistService;
@@ -54,7 +55,7 @@ public class JwtService implements SecurityTokenService {
               .subject(user.getLogin())
               .preferredUserName(user.getId().toString())
               .groups(ROLE_RECOVERY)
-              .expiresAt(System.currentTimeMillis() + 1000L * 3600 * 24)
+              .expiresAt(System.currentTimeMillis() + HOUR_TIME * 2)
               .sign();
   }
 
