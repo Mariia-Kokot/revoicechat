@@ -13,6 +13,7 @@ import { i18n } from "./lib/i18n.js";
 import Modal from "./component/modal.component.js";
 
 let passwordRegex = null;
+let jwtTokenRecovery = null;
 
 document.addEventListener('DOMContentLoaded', async function () {
     initTools();
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Last login
     if (localStorage.getItem("lastUsername")) {
         document.getElementById("username").value = localStorage.getItem("lastUsername");
+        document.getElementById("forgot-password-username").value = localStorage.getItem("lastUsername");
     }
 
     // Last host
@@ -40,11 +42,15 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     document.getElementById("register-host").onchange = () => { getHostSettings() }
     document.getElementById("login-button").onclick = userLogin
+    document.getElementById("forgot-password-button").onclick = forgotPassword
     document.getElementById("switch-to-register-button").onclick = switchToRegister
+    document.getElementById("forget-password-button").onclick = switchToForgetPassword
+    document.getElementById("back-to-login-button").onclick = switchToLogin
     document.getElementById("user-register-button").onclick = userRegister
     document.getElementById("switch-to-login-button").onclick = switchToLogin
     document.getElementById("register-password").oninput = () => { passwordValidator(document.getElementById("register-password"), false); }
     document.getElementById("register-password-confirm").oninput = () => { passwordValidator(document.getElementById("register-password-confirm"), true); }
+    document.getElementById("reset-password-button").onclick = resetPassword
 });
 
 document.getElementById("login-form").addEventListener('keydown', function (e) {
@@ -67,6 +73,91 @@ function userLogin() {
     }
     catch (e) {
         Modal.toggleError(i18n.translateOne("login.error"), e.message);
+    }
+}
+
+async function forgotPassword() {
+    const FORM = document.getElementById("forgot-password-form");
+    const LOGIN = {
+        'username': FORM.username.value,
+        'code': FORM["recovery-code"].value,
+    };
+
+    // Validate URL
+    const host = new URL(FORM.host.value).origin;
+    const spinner = new SpinnerOnButton("forgot-password-button")
+    try {
+        spinner.run()
+        const response = await apiFetch(`${host}/api/auth/login/recovery-codes`, {
+            cache: "no-store",
+            signal: AbortSignal.timeout(5000),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(LOGIN),
+        });
+
+        if (!response.ok) {
+            spinner.error()
+            const message = await response.text();
+            await Modal.toggleError(i18n.translateOne("login.error"), message);
+        }
+
+        // Local storage
+        localStorage.setItem("lastHost", host);
+        localStorage.setItem("lastUsername", LOGIN.username);
+        jwtTokenRecovery = await response.text();
+        spinner.success()
+        switchToResetPassword()
+    } catch (error) {
+        spinner.error()
+        await Modal.toggle({
+            icon: "error",
+            title: i18n.translateOne("login.error.host", host),
+            text: error.message,
+            allowOutsideClick: false,
+        })
+    }
+}
+
+async function resetPassword() {
+    const FORM = document.getElementById("reset-password-form");
+
+    // Validate URL
+    const host = localStorage.getItem("lastHost");
+    const spinner = new SpinnerOnButton("reset-password-button")
+    try {
+        spinner.run()
+        const response = await apiFetch(`${host}/api/auth/login/new-password`, {
+            cache: "no-store",
+            signal: AbortSignal.timeout(5000),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtTokenRecovery}`
+            },
+            method: 'POST',
+            body: JSON.stringify({'password': FORM.password.value, 'confirmPassword': FORM.passwordConfirm.value}),
+        });
+
+        if (response.ok) {
+            localStorage.setItem("lastHost", host);
+            jwtTokenRecovery = null;
+            spinner.success()
+            await Modal.toggle({icon: "success", title: i18n.translateOne('login.reset.password.success')})
+            switchToLogin()
+        } else {
+            spinner.error()
+            const message = await response.text();
+            await Modal.toggleError(i18n.translateOne("login.error"), message);
+        }
+    } catch (error) {
+        await Modal.toggle({
+            icon: "error",
+            title: i18n.translateOne("login.error.host", host),
+            text: error.message,
+            allowOutsideClick: false,
+        })
     }
 }
 
@@ -117,23 +208,43 @@ function lastHost() {
     if (localStorage.getItem("lastHost")) {
         document.getElementById("login-form").host.value = localStorage.getItem("lastHost");
         document.getElementById("register-form").host.value = localStorage.getItem("lastHost");
+        document.getElementById("forgot-password-form").host.value = localStorage.getItem("lastHost");
         getHostSettings();
     }
     else if (document.location.hostname !== "localhost") {
         document.getElementById("login-form").host.value = document.location.origin;
         document.getElementById("register-form").host.value = document.location.origin;
+        document.getElementById("forgot-password-form").host.value = document.location.origin;
         getHostSettings();
     }
 }
 
 function switchToRegister() {
     document.getElementById('login-form').classList.add("hidden");
+    document.getElementById('forgot-password-form').classList.add("hidden");
     document.getElementById('register-form').classList.remove("hidden");
+    document.getElementById('reset-password-form').classList.add("hidden");
+}
+
+function switchToForgetPassword() {
+    document.getElementById('forgot-password-form').classList.remove("hidden");
+    document.getElementById('login-form').classList.add("hidden");
+    document.getElementById('register-form').classList.add("hidden");
+    document.getElementById('reset-password-form').classList.add("hidden");
 }
 
 function switchToLogin() {
     document.getElementById('login-form').classList.remove("hidden");
+    document.getElementById('forgot-password-form').classList.add("hidden");
     document.getElementById('register-form').classList.add("hidden");
+    document.getElementById('reset-password-form').classList.add("hidden");
+}
+
+function switchToResetPassword() {
+    document.getElementById('login-form').classList.add("hidden");
+    document.getElementById('forgot-password-form').classList.add("hidden");
+    document.getElementById('register-form').classList.add("hidden");
+    document.getElementById('reset-password-form').classList.remove("hidden");
 }
 
 function userRegister() {

@@ -11,6 +11,7 @@ import fr.revoicechat.core.representation.NewUserRepresentation;
 import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.core.technicaldata.login.UserPassword;
 import fr.revoicechat.core.technicaldata.login.UserRecoveryCode;
+import fr.revoicechat.core.technicaldata.user.NewPassword;
 import fr.revoicechat.core.technicaldata.user.NewUserSignup;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -76,7 +77,7 @@ public interface AuthController {
   @APIResponse(responseCode = "401", description = "Authentication failed due to invalid credentials")
   @POST
   @Path("/login/new-password")
-  Response updatePasswordAfterRecoveryCode(String password);
+  Response updatePasswordAfterRecoveryCode(NewPassword password);
 
   @RequestBody(
       description = "Regenerate user recovery codes",

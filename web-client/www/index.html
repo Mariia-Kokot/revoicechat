@@ -19,6 +19,7 @@
         <div class="login-box">
             <!-- Login form-->
             <form id="login-form" class="login-form">
+                <h1>ReVoiceChat</h1>
                 <div class="login-element">
                     <label for="login-host" data-i18n="login.host">Host</label>
                     <input type="text" name="host" id="login-host">
@@ -28,7 +29,10 @@
                     <input type="text" name="username" id="username">
                 </div>
                 <div class="login-element">
-                    <label for="password" data-i18n="login.password">Password</label>
+                    <div style="display: flex; justify-content: space-between;">
+                      <label for="password" data-i18n="login.password">Password</label>
+                      <button id="forget-password-button" style="width: auto; margin: 0;" type="button" class='switch' data-i18n="login.register.forgot.password">Forget password</button>
+                    </div>
                     <input type="password" name="password" id="password">
                 </div>
                 <button id="login-button" type="button" data-i18n="login.login">Login</button>
@@ -37,6 +41,7 @@
 
             <!-- Register form-->
             <form id="register-form" class="login-form hidden">
+                <h1>ReVoiceChat</h1>
                 <div class="login-element">
                     <label for="register-host" data-i18n="login.host">Host</label>
                     <input type="text" name="host" id="register-host">
@@ -60,6 +65,39 @@
                 <button type="button" id="user-register-button" data-i18n="login.register" disabled>Register</button>
                 <button type="button" id="switch-to-login-button" class='switch' data-i18n="login.login.go.to.page">Login instead ?</button>
             </form>
+
+            <form id="forgot-password-form" class="login-form hidden">
+                <h1 data-i18n="login.recovery.code.title">🔑 Forgot password</h1>
+                <div class="login-element">
+                    <label for="forgot-password-host" data-i18n="login.host">Host</label>
+                    <input type="text" name="host" id="forgot-password-host">
+                </div>
+                <div class="login-element">
+                    <label for="forgot-password-username" data-i18n="login.username">Username</label>
+                    <input type="text" name="username" id="forgot-password-username">
+                </div>
+                <div class="login-element">
+                    <label for="recovery-code" data-i18n="login.recovery.code">Recovery Code</label>
+                    <input type="password" name="recovery-code" id="recovery-code">
+                </div>
+                <button id="forgot-password-button" type="button" data-i18n="login.recovery.code.button">Verify & continue →</button>
+                <p class="login-info" data-i18n="login.recovery.code.infos">Your recovery code was shown once when you registered.</p>
+                <button id="back-to-login-button" type="button" class='switch' data-i18n="login.back.to.login">← back to login</button>
+          </form>
+
+          <form id="reset-password-form" class="login-form hidden">
+              <h1 data-i18n="login.reset.password.title">🔒 Reset password</h1>
+              <div class="login-element">
+                  <label for="reset-password" data-i18n="login.new.password">New Password</label>
+                  <input type="password" name="password" id="reset-password" title="At least 8 characters with 1 capital and 1 special character">
+              </div>
+              <div class="login-element">
+                  <label for="reset-password-confirm" data-i18n="login.password.confirm">Confirm password</label>
+                  <input type="password" name="passwordConfirm" id="reset-password-confirm" title="At least 8 characters with 1 capital and 1 special character">
+              </div>
+              <button id="reset-password-button" type="button" data-i18n="reset.password.button">Reset password</button>
+              <p class="login-info" data-i18n="reset.password.infos">At least 8 characters, one uppercase and one special character.</p>
+          </form>
         </div>
     </div>
 

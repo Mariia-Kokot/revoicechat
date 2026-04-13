@@ -19,6 +19,7 @@ import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.service.invitation.InvitationLinkUsage;
 import fr.revoicechat.core.technicaldata.user.AdminUpdatableUserData;
+import fr.revoicechat.core.technicaldata.user.NewPassword;
 import fr.revoicechat.core.technicaldata.user.NewUser;
 import fr.revoicechat.core.technicaldata.user.NewUserSignup;
 import fr.revoicechat.core.technicaldata.user.UpdatableUserData;
@@ -161,9 +162,15 @@ public class UserService implements AuthenticatedUserEntityFinder {
   }
 
   @Transactional
-  public void forceSetPassword(final String password) {
-    User user = userHolder.get();
-    user.setPassword(PasswordUtils.encode(password));
-    entityManager.persist(user);
+  public void forceSetPassword(final NewPassword password) {
+    if (Objects.equals(password.password(), password.confirmPassword())) {
+      passwordValidation.validate(password.password());
+      User user = userHolder.get();
+      user.setPassword(PasswordUtils.encode(password.password()));
+      entityManager.persist(user);
+    } else {
+      throw new BadRequestException(USER_PASSWORD_WRONG_CONFIRMATION);
+    }
+
   }
 }

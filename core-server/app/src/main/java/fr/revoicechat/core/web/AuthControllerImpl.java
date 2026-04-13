@@ -11,6 +11,7 @@ import fr.revoicechat.core.representation.NewUserRepresentation;
 import fr.revoicechat.core.service.user.UserService;
 import fr.revoicechat.core.technicaldata.login.UserPassword;
 import fr.revoicechat.core.technicaldata.login.UserRecoveryCode;
+import fr.revoicechat.core.technicaldata.user.NewPassword;
 import fr.revoicechat.core.technicaldata.user.NewUserSignup;
 import fr.revoicechat.core.web.api.AuthController;
 import fr.revoicechat.security.service.RecoverCodesService;
@@ -65,7 +66,7 @@ public class AuthControllerImpl implements AuthController {
 
   @Override
   @RolesAllowed(ROLE_RECOVERY)
-  public Response updatePasswordAfterRecoveryCode(String password) {
+  public Response updatePasswordAfterRecoveryCode(NewPassword password) {
     if (securityIdentity.getPrincipal() instanceof JsonWebToken jsonWebToken) {
       userService.forceSetPassword(password);
       securityTokenService.blackList(jsonWebToken);
