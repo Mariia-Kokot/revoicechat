@@ -414,24 +414,43 @@
                     <br />
                     <input type="file" id="overview-picture-new" accept="image/webp,image/png,image/jpg,image/jpeg,image/gif" style="display:none;">
                     <input type="hidden" id="overview-picture" name="imagePath">
-                    <img id="setting-user-picture" alt="Preview PFP" class="icon large-icon">
 
+                    <div class="two-col-config">
+                        <div class="setting-user-picture">
+                            <div id="overlay-setting-user-picture">
+                                <revoice-icon-picture-camera></revoice-icon-picture-camera>
+                            </div>
+                            <img id="setting-user-picture" alt="Preview PFP" class="icon large-icon">
+                        </div>
+                        <label>
+                            <span data-i18n="user.displayname">Display name</span>
+                            <input type="text" id="settings-user-name" value="[DISPLAYNAME]">
+                        </label>
+                    </div>
                     <br />
-                    <div class="config-buttons">
-                        <button class="button" id="overview-select-picture" data-i18n="user.picture.upload">Upload a profile picture</button>
+                    <div>
+                        <h2 data-i18n="user.password.change">Change password</h2>
+                        <label>
+                            <span data-i18n="user.password.current">Current password</span>
+                            <input type="text" id="settings-user-old-password" value="">
+                        </label>
+                        <div class="two-col-config">
+                            <label>
+                                <span data-i18n="user.password.new">New password</span>
+                                <input type="text" id="settings-user-new-password" value="">
+                            </label>
+                            <label>
+                                <span data-i18n="user.password.new.again">Confirm password</span>
+                                <input type="text" id="settings-user-new-password-confirm" value="">
+                            </label>
+                        </div>
                     </div>
 
-                    <h2 data-i18n="user.displayname">Display name</h2>
-                    <input type="text" id="settings-user-name" value="[DISPLAYNAME]">
-
-                    <br />
-                    <div class="config-buttons">
-                        <button class="button" id="overview-change-password" data-i18n="user.password.change">Change password</button>
-                        <button id="overview-save" class="button" data-i18n="user.save">Save Settings</button>
-                    </div>
-                </div>
-
-                <div class="hidden" id="user-setting-content-appearance">
+                  <div class="two-col-config" style="justify-content: space-between;">
+                      <button id="overview-save" class="button" data-i18n="user.save">Save Settings</button>
+                      <button id="regenerate-recover-codes" class="button" data-i18n="regenerate.recover.codes">Regenerate recover codes</button>
+                  </div>
+                  <div class="hidden" id="user-setting-content-appearance">
                     <!-- Language -->
                     <div id="user-setting-content-language">
                         <h1 data-i18n="user.language">Language</h1>

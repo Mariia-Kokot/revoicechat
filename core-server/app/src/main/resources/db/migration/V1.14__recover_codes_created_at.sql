@@ -1,0 +1,1 @@
+alter table RVC_USER_RECOVER_CODES add column CREATED_AT timestamp(6);

@@ -16,6 +16,15 @@
     background-color: #43434d;
 }
 
+.login-box h1 {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    column-gap: 0.8rem;
+}
+
 .login-form {
     width: 30rem;
 }
@@ -28,6 +37,12 @@
     color: #ffffff;
     justify-content: center;
     align-items: center;
+}
+
+.login-info {
+    font-size: 0.8rem;
+    text-align: center;
+    color: var(--pri-placeholder-color)
 }
 
 button:hover:disabled,
@@ -46,7 +61,7 @@ button:disabled {
     background: none !important;
     padding: 0 !important;
     font-family: arial, sans-serif;
-    text-decoration: underline;
+    text-decoration: none;
     color: var(--pri-button-bg-color);
 }
 

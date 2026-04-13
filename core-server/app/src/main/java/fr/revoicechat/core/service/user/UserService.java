@@ -19,11 +19,14 @@ import fr.revoicechat.core.model.UserType;
 import fr.revoicechat.core.repository.UserRepository;
 import fr.revoicechat.core.service.invitation.InvitationLinkUsage;
 import fr.revoicechat.core.technicaldata.user.AdminUpdatableUserData;
+import fr.revoicechat.core.technicaldata.user.NewPassword;
+import fr.revoicechat.core.technicaldata.user.NewUser;
 import fr.revoicechat.core.technicaldata.user.NewUserSignup;
 import fr.revoicechat.core.technicaldata.user.UpdatableUserData;
 import fr.revoicechat.core.technicaldata.user.UpdatableUserData.PasswordUpdated;
 import fr.revoicechat.risk.service.user.AuthenticatedUserEntityFinder;
 import fr.revoicechat.security.UserHolder;
+import fr.revoicechat.security.service.RecoverCodesService;
 import fr.revoicechat.security.utils.PasswordUtils;
 import fr.revoicechat.web.error.BadRequestException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -39,6 +42,7 @@ public class UserService implements AuthenticatedUserEntityFinder {
   private final UserHolder userHolder;
   private final PasswordValidation passwordValidation;
   private final InvitationLinkUsage invitationLinkUsage;
+  private final RecoverCodesService recoverCodesService;
   private final boolean appOnlyAccessibleByInvitation;
 
   public UserService(EntityManager entityManager,
@@ -46,6 +50,7 @@ public class UserService implements AuthenticatedUserEntityFinder {
                      UserHolder userHolder,
                      PasswordValidation passwordValidation,
                      InvitationLinkUsage invitationLinkUsage,
+                     RecoverCodesService recoverCodesService,
                      @ConfigProperty(name = "revoicechat.global.app-only-accessible-by-invitation")
                      boolean appOnlyAccessibleByInvitation) {
     this.entityManager = entityManager;
@@ -53,11 +58,12 @@ public class UserService implements AuthenticatedUserEntityFinder {
     this.userHolder = userHolder;
     this.passwordValidation = passwordValidation;
     this.invitationLinkUsage = invitationLinkUsage;
+    this.recoverCodesService = recoverCodesService;
     this.appOnlyAccessibleByInvitation = appOnlyAccessibleByInvitation;
   }
 
   @Transactional
-  public User create(final NewUserSignup signer) {
+  public NewUser create(final NewUserSignup signer) {
     if (signer.username() == null || signer.username().isEmpty()) {
       throw new BadRequestException(USER_LOGIN_INVALID);
     }
@@ -74,7 +80,7 @@ public class UserService implements AuthenticatedUserEntityFinder {
     return generateUser(signer, invitationLink, UserType.USER);
   }
 
-  private User generateUser(NewUserSignup signer, InvitationLink invitationLink, UserType type) {
+  private NewUser generateUser(NewUserSignup signer, InvitationLink invitationLink, UserType type) {
     var user = new User();
     user.setId(UUID.randomUUID());
     user.setCreatedDate(OffsetDateTime.now());
@@ -82,10 +88,10 @@ public class UserService implements AuthenticatedUserEntityFinder {
     user.setLogin(signer.username());
     user.setEmail(signer.email());
     user.setType(type);
-    user.setPassword(PasswordUtils.encodePassword(signer.password()));
+    user.setPassword(PasswordUtils.encode(signer.password()));
     entityManager.persist(user);
     invitationLinkUsage.use(invitationLink, user);
-    return user;
+    return new NewUser(user, recoverCodesService.generate(user));
   }
 
   public User findByLogin(final String username) {
@@ -133,7 +139,7 @@ public class UserService implements AuthenticatedUserEntityFinder {
   @Transactional
   public User updateConnectedUser(final UpdatableUserData userData) {
     User user = userHolder.get();
-    Optional.ofNullable(userData.password()).ifPresent(psw -> setPassword(user, psw));
+    Optional.ofNullable(userData.password()).filter(not(PasswordUpdated::isEmpty)).ifPresent(psw -> setPassword(user, psw));
     Optional.ofNullable(userData.displayName()).filter(not(String::isBlank)).ifPresent(user::setDisplayName);
     Optional.ofNullable(userData.status()).ifPresent(user::setStatus);
     entityManager.persist(user);
@@ -149,9 +155,22 @@ public class UserService implements AuthenticatedUserEntityFinder {
       throw new BadRequestException(USER_PASSWORD_WRONG);
     }
     if (Objects.equals(password.newPassword(), password.confirmPassword())) {
-      user.setPassword(PasswordUtils.encodePassword(password.newPassword()));
+      user.setPassword(PasswordUtils.encode(password.newPassword()));
     } else {
       throw new BadRequestException(USER_PASSWORD_WRONG_CONFIRMATION);
     }
+  }
+
+  @Transactional
+  public void forceSetPassword(final NewPassword password) {
+    if (Objects.equals(password.password(), password.confirmPassword())) {
+      passwordValidation.validate(password.password());
+      User user = userHolder.get();
+      user.setPassword(PasswordUtils.encode(password.password()));
+      entityManager.persist(user);
+    } else {
+      throw new BadRequestException(USER_PASSWORD_WRONG_CONFIRMATION);
+    }
+
   }
 }

@@ -6,7 +6,7 @@ import {i18n} from "../lib/i18n.js";
 import MediaServer from "./media/media.server.js";
 import CoreServer from "./core/core.server.js";
 import Modal from "../component/modal.component.js";
-import {getUserLanguage} from "../lib/tools.js";
+import {copyToClipboard, getUserLanguage} from "../lib/tools.js";
 
 export default class UserSettingsController {
     #user;
@@ -172,71 +172,84 @@ export default class UserSettingsController {
     }
 
     #overviewEventHandler() {
-        document.getElementById('overview-change-password').addEventListener('click', () => this.#overviewChangePassword());
         document.getElementById('overview-save').addEventListener('click', () => this.#overviewSave());
-        document.getElementById('overview-select-picture').addEventListener('click', () => this.#overviewSelectPicture());
-    }
-
-    #overviewChangePassword() {
-        Modal.toggle({
-            title: `Change password`,
-            showCancelButton: true,
-            focusConfirm: false,
-            confirmButtonText: i18n.translateOne("modal.save"),
-            allowOutsideClick: false,
-            width: "30rem",
-            html: `
-            <form id="popup-new-password-form" class='popup'>
-                <label data-i18n="user.password.current">Current password</label>
-                <input type='password' id='popup-current-password'>
-                <br/>
-                <br/>
-                <label data-i18n="user.password.new">New password</label>
-                <input type='password' id='popup-new-password'>
-                <br/>
-                <br/>
-                <label data-i18n="user.password.new.again">Confirm password</label>
-                <input type='password' id='popup-confirm-password'>
-            </form>`,
-            didOpen: () => {
-                const currentPassword = document.getElementById('popup-current-password');
-                currentPassword.oninput = () => {
-                    this.#password.password = currentPassword.value
-                };
-
-                const newPassword = document.getElementById('popup-new-password');
-                newPassword.oninput = () => {
-                    this.#password.newPassword = newPassword.value
-                };
-
-                const confirmPassword = document.getElementById('popup-confirm-password');
-                confirmPassword.oninput = () => {
-                    this.#password.confirmPassword = confirmPassword.value
-                };
-
-                i18n.translatePage(document.getElementById("popup-new-password"))
-            }
-            ,
-        }).then(async (result) => {
-            console.log(result)
-            if (result.isConfirmed) {
-                await CoreServer.fetch(`/user/me`, 'PATCH', {password: this.#password});
-            }
-        });
+        document.getElementById('regenerate-recover-codes').addEventListener('click', () => this.#regenerateRecoverCodes());
+        document.getElementById('setting-user-picture').addEventListener('click', () => this.#overviewSelectPicture());
+        document.getElementById('overlay-setting-user-picture').addEventListener('click', () => this.#overviewSelectPicture());
     }
 
     async #overviewSave() {
         const spinner = new SpinnerOnButton("overview-save")
         spinner.run()
-        await this.#overviewChangeName();
+        await this.#overviewChangeData();
         await this.#overviewChangePicture();
         spinner.success()
     }
 
-    async #overviewChangeName() {
+    async #regenerateRecoverCodes() {
+        let password = ''
+        Modal.toggle({
+            title: i18n.translateOne("user.password.enter"),
+            showCancelButton: true,
+            html: `
+            <form class='popup' id="regenerate-recovery-code-form">
+              <input type="password" name="password" id="regenerate-recovery-code-password">
+            </form>`,
+            didOpen: async () => {
+                const select = document.getElementById('regenerate-recovery-code-password');
+                select.oninput = () => { password = select.value };
+                i18n.translatePage(document.getElementById("modal-serverId"))
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const recovered = await CoreServer.fetch(`/auth/recovery-codes`, 'POST', {
+                    username: this.#user.login,
+                    password: password
+                });
+                if (!recovered) {
+                    await Modal.toggleError('')
+                } if (recovered.error) {
+                    await Modal.toggleError(recovered.error)
+                } else {
+                    await Modal.toggle({
+                        icon: "success",
+                        html: `<div data-i18n="login.register.success.recover.codes">your recover codes</div>
+                               <div style="background-color: var(--pri-bg-color); padding: 1rem; margin: 1rem;">
+                                  <div class="icon" id="recover-codes-clip" style="position: absolute; cursor: pointer;">
+                                      <revoice-icon-clipboard></revoice-icon-clipboard>
+                                  </div>
+                                  <code id="recover-codes"></code>
+                               </div>`,
+                        width:'30rem',
+                        didOpen: async () => {
+                            const codes = document.getElementById('recover-codes');
+                            codes.innerText = recovered.join('\n')
+                            const clipButton = document.getElementById('recover-codes-clip');
+                            clipButton.onclick = () => {
+                                copyToClipboard(recovered.join('\n'))
+                            }
+                        },
+                        allowOutsideClick: false,
+                    })
+                }
+            }
+        });
+    }
+
+    async #overviewChangeData() {
         const displayName = document.getElementById("settings-user-name").value
+        const password = document.getElementById("settings-user-old-password").value
+        const newPassword = document.getElementById("settings-user-new-password").value
+        const confirmPassword = document.getElementById("settings-user-new-password-confirm").value
         if (displayName && displayName !== "") {
-            const result = await CoreServer.fetch(`/user/me`, 'PATCH', {displayName: displayName});
+            const result = await CoreServer.fetch(`/user/me`, 'PATCH', {
+                displayName: displayName,
+                password: {
+                    password: password,
+                    newPassword: newPassword,
+                    confirmPassword: confirmPassword
+                }
+            });
             if (result) {
                 this.#user.displayName = result.displayName
                 document.getElementById("settings-user-name").value = result.displayName;

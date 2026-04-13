@@ -1580,6 +1580,31 @@ summary::marker {
     align-items: stretch;
 }
 
+.two-col-config {
+    display: flex;
+    column-gap: 2rem;
+}
+
+.setting-user-picture:hover {
+    cursor: pointer;
+}
+
+#overlay-setting-user-picture {
+    height: 5rem;
+    width: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    background-color: #000000A0;
+    opacity: 0;
+    transition: 0.2s ease;
+}
+
+#overlay-setting-user-picture:hover {
+    opacity: 1;
+}
+
 .mp-modal-body {
     display: flex;
     flex-direction: column;

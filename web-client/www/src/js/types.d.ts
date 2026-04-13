@@ -5,6 +5,11 @@ export type NotificationActionType = "ADD" | "MODIFY" | "REMOVE"
 export type InvitationLinkStatus = "CREATED" | "USED" | "REVOKED"
 export type InvitationType = "APPLICATION_JOIN" | "SERVER_JOIN"
 
+export class NewUserRepresentation {
+    user: UserRepresentation;
+    recoverCodes: string[];
+}
+
 export class UserRepresentation {
     id: string;
     displayName: string;

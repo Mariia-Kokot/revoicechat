@@ -7,10 +7,12 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import fr.revoicechat.core.representation.NewUserRepresentation;
 import fr.revoicechat.core.representation.UserRepresentation;
 import fr.revoicechat.core.technicaldata.login.UserPassword;
+import fr.revoicechat.core.technicaldata.login.UserRecoveryCode;
+import fr.revoicechat.core.technicaldata.user.NewPassword;
 import fr.revoicechat.core.technicaldata.user.NewUserSignup;
-import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -39,7 +41,7 @@ public interface AuthController {
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/signup")
-  UserRepresentation signup(NewUserSignup user);
+  NewUserRepresentation signup(NewUserSignup user);
 
   @Operation(
       summary = "User login",
@@ -54,8 +56,39 @@ public interface AuthController {
   @POST
   @Path("/login")
   @Produces(MediaType.TEXT_PLAIN)
-  @PermitAll
   Response login(UserPassword request);
+
+  @Operation(
+      summary = "User login",
+      description = "Authenticate a user with their username and recovery code. Returns a JWT token that must be included in the Authorization header for subsequent authenticated requests."
+  )
+  @RequestBody(
+      description = "User credentials consisting of username (or display name) and recovery code",
+      content = @Content(schema = @Schema(implementation = UserRecoveryCode.class))
+  )
+  @APIResponse(responseCode = "200", description = "Authentication successful, JWT token returned")
+  @APIResponse(responseCode = "401", description = "Authentication failed due to invalid credentials")
+  @POST
+  @Path("/login/recovery-codes")
+  @Produces(MediaType.TEXT_PLAIN)
+  Response loginUsingRecoveryCode(UserRecoveryCode request);
+
+  @APIResponse(responseCode = "200", description = "Authentication successful, JWT token returned")
+  @APIResponse(responseCode = "401", description = "Authentication failed due to invalid credentials")
+  @POST
+  @Path("/login/new-password")
+  Response updatePasswordAfterRecoveryCode(NewPassword password);
+
+  @RequestBody(
+      description = "Regenerate user recovery codes",
+      content = @Content(schema = @Schema(implementation = UserPassword.class))
+  )
+  @APIResponse(responseCode = "200", description = "Authentication successful, recovery codes regenerated")
+  @APIResponse(responseCode = "401", description = "Authentication failed due to invalid credentials")
+  @POST
+  @Path("/recovery-codes")
+  @Produces(MediaType.APPLICATION_JSON)
+  Response regenerateRecoveryCodes(UserPassword request);
 
   @Operation(
       summary = "User logout",
@@ -65,7 +98,5 @@ public interface AuthController {
   @APIResponse(responseCode = "204", description = "No active session to log out")
   @GET
   @Path("/logout")
-  @Produces(MediaType.TEXT_PLAIN)
-  @PermitAll
   Response logout();
 }
